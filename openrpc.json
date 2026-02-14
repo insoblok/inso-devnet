@@ -1,0 +1,483 @@
+{
+  "openrpc": "1.3.2",
+  "info": {
+    "title": "InSoBlok L2 JSON-RPC API",
+    "description": "Complete JSON-RPC API for the InSoBlok Layer 2 blockchain. Includes standard Ethereum methods and custom InSoBlok extensions for TasteScore, sovereignty, fees, DID, and validator operations.",
+    "version": "1.0.0",
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "servers": [
+    { "name": "Sequencer", "url": "http://localhost:8545" },
+    { "name": "Validator", "url": "http://localhost:8547" }
+  ],
+  "methods": [
+    {
+      "name": "eth_chainId",
+      "summary": "Returns the chain ID of the InSoBlok L2 network",
+      "params": [],
+      "result": {
+        "name": "chainId",
+        "description": "Hex-encoded chain ID (42069 = 0xa455)",
+        "schema": { "type": "string" }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "eth_blockNumber",
+      "summary": "Returns the latest block number",
+      "params": [],
+      "result": {
+        "name": "blockNumber",
+        "description": "Hex-encoded block number",
+        "schema": { "type": "string" }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "eth_getBlockByNumber",
+      "summary": "Returns a block by its number",
+      "params": [
+        { "name": "blockNumber", "description": "Hex-encoded block number or 'latest'", "required": true, "schema": { "type": "string" } },
+        { "name": "fullTx", "description": "If true, returns full transaction objects", "required": true, "schema": { "type": "boolean" } }
+      ],
+      "result": {
+        "name": "block",
+        "description": "Block object with header + transactions",
+        "schema": { "$ref": "#/components/schemas/Block" }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "eth_getBlockByHash",
+      "summary": "Returns a block by its hash",
+      "params": [
+        { "name": "blockHash", "description": "32-byte block hash", "required": true, "schema": { "type": "string" } },
+        { "name": "fullTx", "description": "If true, returns full transaction objects", "required": true, "schema": { "type": "boolean" } }
+      ],
+      "result": {
+        "name": "block",
+        "schema": { "$ref": "#/components/schemas/Block" }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "eth_sendRawTransaction",
+      "summary": "Submit a signed transaction to the mempool",
+      "description": "Transaction is ordered by TasteScore priority in the mempool",
+      "params": [
+        { "name": "signedTx", "description": "RLP-encoded signed transaction", "required": true, "schema": { "type": "string" } }
+      ],
+      "result": {
+        "name": "txHash",
+        "description": "Transaction hash",
+        "schema": { "type": "string" }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "eth_getTransactionReceipt",
+      "summary": "Returns the receipt for a mined transaction",
+      "params": [
+        { "name": "txHash", "description": "Transaction hash", "required": true, "schema": { "type": "string" } }
+      ],
+      "result": {
+        "name": "receipt",
+        "schema": { "$ref": "#/components/schemas/TransactionReceipt" }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "eth_getTransactionByHash",
+      "summary": "Returns a transaction by its hash",
+      "params": [
+        { "name": "txHash", "required": true, "schema": { "type": "string" } }
+      ],
+      "result": {
+        "name": "transaction",
+        "schema": { "$ref": "#/components/schemas/Transaction" }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "eth_getBalance",
+      "summary": "Returns the balance of an address",
+      "params": [
+        { "name": "address", "required": true, "schema": { "type": "string" } },
+        { "name": "blockTag", "required": true, "schema": { "type": "string" } }
+      ],
+      "result": {
+        "name": "balance",
+        "description": "Hex-encoded balance in wei",
+        "schema": { "type": "string" }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "eth_getTransactionCount",
+      "summary": "Returns the nonce of an address",
+      "params": [
+        { "name": "address", "required": true, "schema": { "type": "string" } },
+        { "name": "blockTag", "required": true, "schema": { "type": "string" } }
+      ],
+      "result": {
+        "name": "nonce",
+        "schema": { "type": "string" }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "eth_gasPrice",
+      "summary": "Returns the current dynamic base fee",
+      "description": "EIP-1559 style base fee that adjusts based on block gas utilization",
+      "params": [],
+      "result": {
+        "name": "gasPrice",
+        "description": "Hex-encoded gas price in wei",
+        "schema": { "type": "string" }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "eth_estimateGas",
+      "summary": "Estimate gas for a transaction",
+      "params": [
+        { "name": "txObject", "required": true, "schema": { "type": "object" } }
+      ],
+      "result": {
+        "name": "gasEstimate",
+        "schema": { "type": "string" }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "eth_call",
+      "summary": "Execute a read-only contract call",
+      "params": [
+        { "name": "txObject", "required": true, "schema": { "type": "object" } },
+        { "name": "blockTag", "required": true, "schema": { "type": "string" } }
+      ],
+      "result": {
+        "name": "returnData",
+        "schema": { "type": "string" }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "eth_getCode",
+      "summary": "Returns deployed bytecode at an address",
+      "params": [
+        { "name": "address", "required": true, "schema": { "type": "string" } },
+        { "name": "blockTag", "required": true, "schema": { "type": "string" } }
+      ],
+      "result": {
+        "name": "code",
+        "schema": { "type": "string" }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "eth_getStorageAt",
+      "summary": "Returns storage at a specific slot",
+      "params": [
+        { "name": "address", "required": true, "schema": { "type": "string" } },
+        { "name": "slot", "required": true, "schema": { "type": "string" } },
+        { "name": "blockTag", "required": true, "schema": { "type": "string" } }
+      ],
+      "result": {
+        "name": "value",
+        "schema": { "type": "string" }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "eth_getLogs",
+      "summary": "Returns matching log entries",
+      "params": [
+        { "name": "filter", "required": true, "schema": { "type": "object" } }
+      ],
+      "result": {
+        "name": "logs",
+        "schema": { "type": "array", "items": { "type": "object" } }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "net_version",
+      "summary": "Returns the network ID",
+      "params": [],
+      "result": {
+        "name": "networkId",
+        "schema": { "type": "string" }
+      },
+      "tags": [{ "name": "Ethereum" }]
+    },
+    {
+      "name": "inso_getSequencerStatus",
+      "summary": "Returns the sequencer's operational status",
+      "params": [],
+      "result": {
+        "name": "status",
+        "schema": { "$ref": "#/components/schemas/SequencerStatus" }
+      },
+      "tags": [{ "name": "InSoBlok" }]
+    },
+    {
+      "name": "inso_getTasteScoreOrdering",
+      "summary": "Returns the current mempool ordered by TasteScore priority",
+      "description": "Returns pending transactions sorted by their TasteScore-weighted priority",
+      "params": [],
+      "result": {
+        "name": "ordering",
+        "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TasteScoreEntry" } }
+      },
+      "tags": [{ "name": "InSoBlok" }]
+    },
+    {
+      "name": "inso_getBatchStatus",
+      "summary": "Returns the latest L1 batch submission status",
+      "params": [],
+      "result": {
+        "name": "batch",
+        "schema": { "$ref": "#/components/schemas/BatchInfo" }
+      },
+      "tags": [{ "name": "InSoBlok" }]
+    },
+    {
+      "name": "inso_getPendingTxCount",
+      "summary": "Returns the number of pending transactions in the mempool",
+      "params": [],
+      "result": {
+        "name": "count",
+        "schema": { "type": "integer" }
+      },
+      "tags": [{ "name": "InSoBlok" }]
+    },
+    {
+      "name": "inso_getFeeStats",
+      "summary": "Returns dynamic fee model statistics",
+      "description": "Contains current base fee, min/max bounds, EMA gas utilization, and blocks processed",
+      "params": [],
+      "result": {
+        "name": "feeStats",
+        "schema": { "$ref": "#/components/schemas/FeeStats" }
+      },
+      "tags": [{ "name": "InSoBlok", "name": "Fees" }]
+    },
+    {
+      "name": "inso_getEffectiveFee",
+      "summary": "Returns the sovereignty-discounted effective fee for an address",
+      "description": "Computes: effectiveFee = baseFee * (10000 - discountBps) / 10000",
+      "params": [
+        { "name": "address", "description": "The address to check", "required": true, "schema": { "type": "string" } }
+      ],
+      "result": {
+        "name": "effectiveFee",
+        "schema": { "$ref": "#/components/schemas/EffectiveFeeResult" }
+      },
+      "tags": [{ "name": "InSoBlok", "name": "Fees" }]
+    },
+    {
+      "name": "inso_getSovereigntyDiscount",
+      "summary": "Returns the sovereignty tier and fee discount for an address",
+      "params": [
+        { "name": "address", "required": true, "schema": { "type": "string" } }
+      ],
+      "result": {
+        "name": "discount",
+        "schema": { "$ref": "#/components/schemas/SovereigntyDiscountResult" }
+      },
+      "tags": [{ "name": "InSoBlok", "name": "Sovereignty" }]
+    },
+    {
+      "name": "inso_validatorStatus",
+      "summary": "Returns the validator node's operational status",
+      "description": "Includes sync state, validator count, peer count, and total staked",
+      "params": [],
+      "result": {
+        "name": "status",
+        "schema": { "$ref": "#/components/schemas/ValidatorStatus" }
+      },
+      "tags": [{ "name": "Validator" }]
+    },
+    {
+      "name": "inso_getValidators",
+      "summary": "Returns all registered validators with sovereignty data",
+      "params": [],
+      "result": {
+        "name": "validators",
+        "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ValidatorInfo" } }
+      },
+      "tags": [{ "name": "Validator" }]
+    },
+    {
+      "name": "inso_getPeers",
+      "summary": "Returns connected P2P peer addresses",
+      "params": [],
+      "result": {
+        "name": "peers",
+        "schema": { "type": "array", "items": { "type": "string" } }
+      },
+      "tags": [{ "name": "Validator" }]
+    },
+    {
+      "name": "inso_getActiveStakes",
+      "summary": "Returns all active stake records",
+      "params": [],
+      "result": {
+        "name": "stakes",
+        "schema": { "type": "array", "items": { "type": "object" } }
+      },
+      "tags": [{ "name": "Validator" }]
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Block": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "properties": {
+              "number": { "type": "integer" },
+              "hash": { "type": "string" },
+              "parentHash": { "type": "string" },
+              "timestamp": { "type": "integer" },
+              "stateRoot": { "type": "string" },
+              "gasUsed": { "type": "integer" },
+              "gasLimit": { "type": "integer" },
+              "txCount": { "type": "integer" },
+              "sequencer": { "type": "string" },
+              "baseFee": { "type": "string" },
+              "l1Origin": {
+                "type": "object",
+                "properties": {
+                  "blockNumber": { "type": "integer" },
+                  "blockHash": { "type": "string" },
+                  "timestamp": { "type": "integer" }
+                }
+              }
+            }
+          },
+          "transactions": { "type": "array", "items": { "$ref": "#/components/schemas/Transaction" } }
+        }
+      },
+      "Transaction": {
+        "type": "object",
+        "properties": {
+          "hash": { "type": "string" },
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "value": { "type": "string" },
+          "gas": { "type": "integer" },
+          "gasPrice": { "type": "string" },
+          "nonce": { "type": "integer" },
+          "input": { "type": "string" },
+          "blockNumber": { "type": "integer" }
+        }
+      },
+      "TransactionReceipt": {
+        "type": "object",
+        "properties": {
+          "transactionHash": { "type": "string" },
+          "blockNumber": { "type": "integer" },
+          "status": { "type": "string" },
+          "gasUsed": { "type": "string" },
+          "cumulativeGasUsed": { "type": "string" },
+          "contractAddress": { "type": "string" },
+          "logs": { "type": "array" }
+        }
+      },
+      "SequencerStatus": {
+        "type": "object",
+        "properties": {
+          "isSequencing": { "type": "boolean" },
+          "currentBlock": { "type": "integer" },
+          "pendingTxCount": { "type": "integer" },
+          "lastBatchIndex": { "type": "integer" },
+          "l1Head": { "type": "integer" },
+          "sequencerAddr": { "type": "string" },
+          "chainId": { "type": "string" }
+        }
+      },
+      "TasteScoreEntry": {
+        "type": "object",
+        "properties": {
+          "txHash": { "type": "string" },
+          "sender": { "type": "string" },
+          "tasteScore": { "type": "number" },
+          "priority": { "type": "number" },
+          "gasPrice": { "type": "string" }
+        }
+      },
+      "BatchInfo": {
+        "type": "object",
+        "properties": {
+          "index": { "type": "integer" },
+          "startBlock": { "type": "integer" },
+          "endBlock": { "type": "integer" },
+          "blockCount": { "type": "integer" },
+          "l1TxHash": { "type": "string" },
+          "timestamp": { "type": "string" },
+          "sizeBytes": { "type": "integer" },
+          "status": { "type": "string" }
+        }
+      },
+      "FeeStats": {
+        "type": "object",
+        "description": "Dynamic fee model statistics",
+        "properties": {
+          "baseFee": { "type": "string", "description": "Current base fee in wei" },
+          "minBaseFee": { "type": "string", "description": "Floor base fee" },
+          "maxBaseFee": { "type": "string", "description": "Ceiling base fee" },
+          "emaGasUsage": { "type": "number", "description": "EMA gas utilization (0-1)" },
+          "targetGasUsage": { "type": "number", "description": "Target utilization (0.5 = 50%)" },
+          "blocksProcessed": { "type": "integer" }
+        }
+      },
+      "EffectiveFeeResult": {
+        "type": "object",
+        "properties": {
+          "baseFee": { "type": "string" },
+          "effectiveFee": { "type": "string" },
+          "discountBps": { "type": "integer", "description": "Discount in basis points" },
+          "tier": { "type": "integer", "description": "0=None, 1=Bronze, 2=Silver, 3=Gold, 4=Platinum" }
+        }
+      },
+      "SovereigntyDiscountResult": {
+        "type": "object",
+        "properties": {
+          "address": { "type": "string" },
+          "discountBps": { "type": "integer" },
+          "tier": { "type": "integer" },
+          "tierName": { "type": "string" }
+        }
+      },
+      "ValidatorStatus": {
+        "type": "object",
+        "properties": {
+          "synced": { "type": "boolean" },
+          "latestBlock": { "type": "integer" },
+          "validatorCount": { "type": "integer" },
+          "peerCount": { "type": "integer" },
+          "totalStaked": { "type": "string" }
+        }
+      },
+      "ValidatorInfo": {
+        "type": "object",
+        "properties": {
+          "address": { "type": "string" },
+          "stake": { "type": "string" },
+          "tasteScore": { "type": "number" },
+          "votePower": { "type": "number" },
+          "sovereigntyScore": { "type": "number" },
+          "sovereigntyTier": { "type": "integer" },
+          "isActive": { "type": "boolean" },
+          "slashCount": { "type": "integer" },
+          "joinedAt": { "type": "string" }
+        }
+      }
+    }
+  }
+}

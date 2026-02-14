@@ -1,0 +1,109 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Block Height",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "targets": [{ "expr": "inso_sequencer_block_height", "legendFormat": "Block Height" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } }
+    },
+    {
+      "title": "Blocks Produced",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "targets": [{ "expr": "inso_sequencer_blocks_produced_total", "legendFormat": "Total" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] } } }
+    },
+    {
+      "title": "Transactions Processed",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "targets": [{ "expr": "inso_sequencer_tx_processed_total", "legendFormat": "Total" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "purple", "value": null }] } } }
+    },
+    {
+      "title": "Mempool Depth",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "targets": [{ "expr": "inso_sequencer_mempool_size", "legendFormat": "Pending" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "yellow", "value": null }, { "color": "red", "value": 100 }] } } }
+    },
+    {
+      "title": "Base Fee (mGwei)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "targets": [{ "expr": "inso_sequencer_base_fee_mgwei", "legendFormat": "Base Fee" }],
+      "fieldConfig": { "defaults": { "unit": "none" } }
+    },
+    {
+      "title": "Block Time (ms)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "targets": [{ "expr": "inso_sequencer_block_time_avg_ms", "legendFormat": "Avg Block Time" }],
+      "fieldConfig": { "defaults": { "unit": "ms" } }
+    },
+    {
+      "title": "Batches Submitted",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "targets": [{ "expr": "rate(inso_sequencer_batches_submitted_total[5m])", "legendFormat": "Batches/5m" }],
+      "fieldConfig": { "defaults": { "unit": "ops" } }
+    },
+    {
+      "title": "RPC Requests",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "targets": [
+        { "expr": "rate(inso_sequencer_rpc_requests_total[5m])", "legendFormat": "Requests/5m" },
+        { "expr": "rate(inso_sequencer_rpc_errors_total[5m])", "legendFormat": "Errors/5m" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps" } }
+    },
+    {
+      "title": "Validator Attestations",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+      "targets": [
+        { "expr": "rate(inso_validator_attestations_created_total[5m])", "legendFormat": "Created/5m" },
+        { "expr": "rate(inso_validator_attestations_verified_total[5m])", "legendFormat": "Verified/5m" },
+        { "expr": "rate(inso_validator_attestations_failed_total[5m])", "legendFormat": "Failed/5m" }
+      ]
+    },
+    {
+      "title": "Validator Sovereignty",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 12, "y": 20 },
+      "targets": [{ "expr": "inso_validator_sovereignty_score / 10000", "legendFormat": "Score" }],
+      "fieldConfig": { "defaults": { "decimals": 4, "thresholds": { "steps": [{ "color": "gray", "value": null }, { "color": "orange", "value": 0.15 }, { "color": "silver", "value": 0.40 }, { "color": "gold", "value": 0.65 }, { "color": "cyan", "value": 0.85 }] } } }
+    },
+    {
+      "title": "Validator Peers",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 20 },
+      "targets": [{ "expr": "inso_validator_peer_count", "legendFormat": "Peers" }],
+      "fieldConfig": { "defaults": { "thresholds": { "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] } } }
+    },
+    {
+      "title": "Validator XP",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "targets": [{ "expr": "inso_validator_xp", "legendFormat": "XP" }]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["insoblok", "l2", "blockchain"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "InSoBlok L2 Overview",
+  "uid": "insoblok-overview",
+  "version": 1
+}

@@ -263,7 +263,7 @@
         "name": "feeStats",
         "schema": { "$ref": "#/components/schemas/FeeStats" }
       },
-      "tags": [{ "name": "InSoBlok", "name": "Fees" }]
+      "tags": [{ "name": "InSoBlok" }, { "name": "Fees" }]
     },
     {
       "name": "inso_getEffectiveFee",
@@ -276,7 +276,7 @@
         "name": "effectiveFee",
         "schema": { "$ref": "#/components/schemas/EffectiveFeeResult" }
       },
-      "tags": [{ "name": "InSoBlok", "name": "Fees" }]
+      "tags": [{ "name": "InSoBlok" }, { "name": "Fees" }]
     },
     {
       "name": "inso_getSovereigntyDiscount",
@@ -288,7 +288,7 @@
         "name": "discount",
         "schema": { "$ref": "#/components/schemas/SovereigntyDiscountResult" }
       },
-      "tags": [{ "name": "InSoBlok", "name": "Sovereignty" }]
+      "tags": [{ "name": "InSoBlok" }, { "name": "Sovereignty" }]
     },
     {
       "name": "inso_validatorStatus",
@@ -330,6 +330,54 @@
         "schema": { "type": "array", "items": { "type": "object" } }
       },
       "tags": [{ "name": "Validator" }]
+    },
+    {
+      "name": "inso_getLaneStats",
+      "summary": "Returns execution lane statistics",
+      "description": "Returns per-lane counts & gas usage for the reputation-gated execution lanes (Fast/Standard/Slow). Includes lane gas allocation thresholds.",
+      "params": [],
+      "result": {
+        "name": "laneStats",
+        "schema": { "$ref": "#/components/schemas/LaneStats" }
+      },
+      "tags": [{ "name": "InSoBlok" }, { "name": "Lanes" }]
+    },
+    {
+      "name": "inso_getAdaptiveBlockStats",
+      "summary": "Returns current adaptive block sizing parameters",
+      "description": "Returns dynamic gas limit, max transactions, EMA utilization, target utilization, and configured bounds. Values adjust automatically based on network load.",
+      "params": [],
+      "result": {
+        "name": "adaptiveBlockStats",
+        "schema": { "$ref": "#/components/schemas/AdaptiveBlockStats" }
+      },
+      "tags": [{ "name": "InSoBlok" }, { "name": "Adaptive" }]
+    },
+    {
+      "name": "inso_getComputeReceipt",
+      "summary": "Returns a verifiable compute receipt for a transaction",
+      "description": "Returns the full execution receipt including pre/post state roots, gas used, input/output/logs hashes, and receipt commitment hash. Enables third-party verification without re-execution.",
+      "params": [
+        { "name": "txHash", "description": "Transaction hash (0x-prefixed)", "required": true, "schema": { "type": "string" } }
+      ],
+      "result": {
+        "name": "receipt",
+        "schema": { "$ref": "#/components/schemas/ComputeReceipt" }
+      },
+      "tags": [{ "name": "InSoBlok" }, { "name": "Receipts" }]
+    },
+    {
+      "name": "inso_getBlockReceiptRoot",
+      "summary": "Returns the Merkle receipt root for a block",
+      "description": "Computes a Merkle tree over all compute receipt hashes in the block. Returns the root hash and the number of receipts.",
+      "params": [
+        { "name": "blockNumber", "description": "Block number", "required": true, "schema": { "type": "integer" } }
+      ],
+      "result": {
+        "name": "receiptRoot",
+        "schema": { "$ref": "#/components/schemas/BlockReceiptRoot" }
+      },
+      "tags": [{ "name": "InSoBlok" }, { "name": "Receipts" }]
     }
   ],
   "components": {
@@ -476,6 +524,75 @@
           "isActive": { "type": "boolean" },
           "slashCount": { "type": "integer" },
           "joinedAt": { "type": "string" }
+        }
+      },
+      "LaneStats": {
+        "type": "object",
+        "description": "Execution lane statistics for the reputation-gated mempool",
+        "properties": {
+          "fast": { "$ref": "#/components/schemas/LaneInfo" },
+          "standard": { "$ref": "#/components/schemas/LaneInfo" },
+          "slow": { "$ref": "#/components/schemas/LaneInfo" },
+          "thresholds": {
+            "type": "object",
+            "properties": {
+              "fastMinScore": { "type": "number", "description": "Minimum TasteScore for Fast lane (Gold+ tier)" },
+              "standardMinScore": { "type": "number", "description": "Minimum TasteScore for Standard lane (Bronze+ tier)" }
+            }
+          }
+        }
+      },
+      "LaneInfo": {
+        "type": "object",
+        "properties": {
+          "count": { "type": "integer", "description": "Number of pending transactions in this lane" },
+          "gasUsed": { "type": "integer", "description": "Total gas of pending transactions" },
+          "gasBudgetBps": { "type": "integer", "description": "Gas allocation in basis points (e.g. 4000 = 40%)" }
+        }
+      },
+      "AdaptiveBlockStats": {
+        "type": "object",
+        "description": "Current adaptive block sizing parameters",
+        "properties": {
+          "currentGasLimit": { "type": "integer", "description": "Current dynamic gas limit" },
+          "currentMaxTx": { "type": "integer", "description": "Current max transactions per block" },
+          "utilizationEMA": { "type": "number", "description": "Exponential moving average of gas utilization (0.0-1.0)" },
+          "targetUtilization": { "type": "number", "description": "Target utilization threshold" },
+          "minGasLimit": { "type": "integer" },
+          "maxGasLimit": { "type": "integer" },
+          "minMaxTx": { "type": "integer" },
+          "maxMaxTx": { "type": "integer" }
+        }
+      },
+      "ComputeReceipt": {
+        "type": "object",
+        "description": "Verifiable compute receipt proving transaction execution correctness",
+        "properties": {
+          "txHash": { "type": "string" },
+          "blockNumber": { "type": "integer" },
+          "txIndex": { "type": "integer" },
+          "sender": { "type": "string" },
+          "to": { "type": "string" },
+          "value": { "type": "string" },
+          "gasUsed": { "type": "integer" },
+          "gasPrice": { "type": "string" },
+          "preStateRoot": { "type": "string", "description": "State root before execution" },
+          "postStateRoot": { "type": "string", "description": "State root after execution" },
+          "status": { "type": "integer", "description": "1 = success, 0 = failure" },
+          "inputHash": { "type": "string", "description": "keccak256(calldata)" },
+          "outputHash": { "type": "string", "description": "keccak256(return data)" },
+          "logsHash": { "type": "string", "description": "keccak256(rlp(logs))" },
+          "receiptHash": { "type": "string", "description": "Commitment hash of entire receipt" },
+          "executedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "BlockReceiptRoot": {
+        "type": "object",
+        "description": "Merkle root computed over all compute receipt hashes in a block",
+        "properties": {
+          "blockNumber": { "type": "integer" },
+          "receiptRoot": { "type": "string", "description": "Merkle root of receipt hashes" },
+          "receiptCount": { "type": "integer", "description": "Number of receipts in the block" }
         }
       }
     }

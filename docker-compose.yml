@@ -53,6 +53,11 @@ services:
     depends_on:
       sequencer:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8547/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   # ── Contract Deployer (init container) ───────────────
   contract-deployer:

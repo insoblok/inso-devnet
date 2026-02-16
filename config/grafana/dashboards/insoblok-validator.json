@@ -1,0 +1,114 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Synced Block",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "targets": [{ "expr": "inso_validator_synced_block", "legendFormat": "Block" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } }
+    },
+    {
+      "title": "Is Synced",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 3, "x": 6, "y": 0 },
+      "targets": [{ "expr": "inso_validator_is_synced", "legendFormat": "Synced" }],
+      "fieldConfig": { "defaults": { "mappings": [{ "type": "value", "options": { "0": { "text": "Syncing", "color": "yellow" }, "1": { "text": "Synced", "color": "green" } } }], "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "yellow", "value": null }, { "color": "green", "value": 1 }] } } }
+    },
+    {
+      "title": "Peer Count",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 3, "x": 9, "y": 0 },
+      "targets": [{ "expr": "inso_validator_peer_count", "legendFormat": "Peers" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 1 }, { "color": "green", "value": 3 }] } } }
+    },
+    {
+      "title": "Staked (ETH)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "targets": [{ "expr": "inso_validator_staked_eth", "legendFormat": "Staked" }],
+      "fieldConfig": { "defaults": { "unit": "none", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] } } }
+    },
+    {
+      "title": "RPC Requests",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "targets": [{ "expr": "rate(inso_validator_rpc_requests_total[1m])", "legendFormat": "req/s" }],
+      "fieldConfig": { "defaults": { "unit": "reqps", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "purple", "value": null }] } } }
+    },
+    {
+      "title": "Attestation Rates",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "targets": [
+        { "expr": "rate(inso_validator_attestations_created_total[1m])", "legendFormat": "Created/s" },
+        { "expr": "rate(inso_validator_attestations_verified_total[1m])", "legendFormat": "Verified/s" },
+        { "expr": "rate(inso_validator_attestations_failed_total[1m])", "legendFormat": "Failed/s" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" } }
+    },
+    {
+      "title": "Blocks Finalized",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "targets": [
+        { "expr": "inso_validator_blocks_finalized_total", "legendFormat": "Finalized Total" },
+        { "expr": "rate(inso_validator_blocks_finalized_total[1m])", "legendFormat": "Finalized/s" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    },
+    {
+      "title": "Sovereignty Score (x10000)",
+      "type": "gauge",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 12 },
+      "targets": [{ "expr": "inso_validator_sovereignty_score", "legendFormat": "Score" }],
+      "fieldConfig": { "defaults": { "min": 0, "max": 10000, "thresholds": { "steps": [{ "color": "red", "value": null }, { "color": "#CD7F32", "value": 1500 }, { "color": "silver", "value": 4000 }, { "color": "gold", "value": 6500 }, { "color": "#E5E4E2", "value": 8500 }] } } }
+    },
+    {
+      "title": "Sovereignty Tier",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 4, "x": 8, "y": 12 },
+      "targets": [{ "expr": "inso_validator_sovereignty_tier", "legendFormat": "Tier" }],
+      "fieldConfig": { "defaults": { "mappings": [{ "type": "value", "options": { "0": { "text": "None" }, "1": { "text": "Bronze" }, "2": { "text": "Silver" }, "3": { "text": "Gold" }, "4": { "text": "Platinum" } } }], "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "gray", "value": null }, { "color": "#CD7F32", "value": 1 }, { "color": "silver", "value": 2 }, { "color": "gold", "value": 3 }, { "color": "#E5E4E2", "value": 4 }] } } }
+    },
+    {
+      "title": "XP Points",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 12 },
+      "targets": [{ "expr": "inso_validator_xp", "legendFormat": "Current XP" }],
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    },
+    {
+      "title": "Slashing Events",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 18 },
+      "targets": [
+        { "expr": "inso_validator_slashes_received_total", "legendFormat": "Received" },
+        { "expr": "inso_validator_slashes_reported_total", "legendFormat": "Reported" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    },
+    {
+      "title": "Attestations Received vs Created",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 18 },
+      "targets": [
+        { "expr": "inso_validator_attestations_created_total", "legendFormat": "Created" },
+        { "expr": "inso_validator_attestations_received_total", "legendFormat": "Received" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["insoblok", "validator", "consensus"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "InSoBlok Validator",
+  "uid": "insoblok-validator",
+  "version": 1
+}

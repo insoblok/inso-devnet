@@ -1,0 +1,170 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "── Execution Lanes (Feature #1) ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
+      "options": { "content": "Reputation-gated execution lanes: Fast (Gold+/40%), Standard (Bronze+/40%), Slow (unscored/20%)", "mode": "markdown" }
+    },
+    {
+      "title": "Fast Lane Txs",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 2 },
+      "targets": [{ "expr": "inso_sequencer_lane_tx_count{lane=\"fast\"}", "legendFormat": "Fast" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } }
+    },
+    {
+      "title": "Standard Lane Txs",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 2 },
+      "targets": [{ "expr": "inso_sequencer_lane_tx_count{lane=\"standard\"}", "legendFormat": "Standard" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "blue" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] } } }
+    },
+    {
+      "title": "Slow Lane Txs",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 2 },
+      "targets": [{ "expr": "inso_sequencer_lane_tx_count{lane=\"slow\"}", "legendFormat": "Slow" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "orange" }, "thresholds": { "steps": [{ "color": "orange", "value": null }] } } }
+    },
+    {
+      "title": "Lane Transaction Distribution",
+      "type": "piechart",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 2 },
+      "targets": [
+        { "expr": "inso_sequencer_lane_tx_count{lane=\"fast\"}", "legendFormat": "Fast" },
+        { "expr": "inso_sequencer_lane_tx_count{lane=\"standard\"}", "legendFormat": "Standard" },
+        { "expr": "inso_sequencer_lane_tx_count{lane=\"slow\"}", "legendFormat": "Slow" }
+      ],
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" } } }
+    },
+    {
+      "title": "Lane Gas Throughput",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "targets": [
+        { "expr": "rate(inso_sequencer_lane_gas_total{lane=\"fast\"}[5m])", "legendFormat": "Fast Gas/5m" },
+        { "expr": "rate(inso_sequencer_lane_gas_total{lane=\"standard\"}[5m])", "legendFormat": "Standard Gas/5m" },
+        { "expr": "rate(inso_sequencer_lane_gas_total{lane=\"slow\"}[5m])", "legendFormat": "Slow Gas/5m" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "none", "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } } } }
+    },
+    {
+      "title": "Lane Tx Count Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 2 },
+      "targets": [
+        { "expr": "inso_sequencer_lane_tx_count{lane=\"fast\"}", "legendFormat": "Fast" },
+        { "expr": "inso_sequencer_lane_tx_count{lane=\"standard\"}", "legendFormat": "Standard" },
+        { "expr": "inso_sequencer_lane_tx_count{lane=\"slow\"}", "legendFormat": "Slow" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    },
+    {
+      "title": "── Adaptive Block Sizing (Feature #4) ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 14 },
+      "options": { "content": "Dynamic gas limits (15M–60M) and tx caps (1K–10K) that adjust based on EMA utilization", "mode": "markdown" }
+    },
+    {
+      "title": "Current Gas Limit",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 16 },
+      "targets": [{ "expr": "inso_sequencer_adaptive_gas_limit", "legendFormat": "Gas Limit" }],
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }, { "color": "green", "value": 30000000 }, { "color": "yellow", "value": 45000000 }, { "color": "red", "value": 55000000 }] } } }
+    },
+    {
+      "title": "Current Max Tx/Block",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 16 },
+      "targets": [{ "expr": "inso_sequencer_adaptive_max_tx", "legendFormat": "Max Tx" }],
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }, { "color": "green", "value": 5000 }, { "color": "yellow", "value": 8000 }] } } }
+    },
+    {
+      "title": "Gas Utilization EMA (%)",
+      "type": "gauge",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 16 },
+      "targets": [{ "expr": "inso_sequencer_adaptive_utilization_bps / 100", "legendFormat": "Utilization %" }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 50 }, { "color": "red", "value": 80 }] } } }
+    },
+    {
+      "title": "Gas Limit Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+      "targets": [
+        { "expr": "inso_sequencer_adaptive_gas_limit", "legendFormat": "Current Gas Limit" }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "custom": { "fillOpacity": 10 } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Min" }, "properties": [{ "id": "custom.lineStyle", "value": { "fill": "dash" } }] },
+          { "matcher": { "id": "byName", "options": "Max" }, "properties": [{ "id": "custom.lineStyle", "value": { "fill": "dash" } }] }
+        ]
+      }
+    },
+    {
+      "title": "Utilization EMA Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
+      "targets": [
+        { "expr": "inso_sequencer_adaptive_utilization_bps / 10000", "legendFormat": "Utilization EMA" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0, "max": 1, "custom": { "fillOpacity": 30 } } }
+    },
+    {
+      "title": "── Verifiable Compute Receipts (Feature #10) ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 28 },
+      "options": { "content": "Per-transaction execution receipts with pre/post state roots and Merkle receipt roots per block", "mode": "markdown" }
+    },
+    {
+      "title": "Total Receipts Generated",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 0, "y": 30 },
+      "targets": [{ "expr": "inso_sequencer_receipts_generated_total", "legendFormat": "Generated" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "cyan", "value": null }] } } }
+    },
+    {
+      "title": "Receipts In Store",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 8, "y": 30 },
+      "targets": [{ "expr": "inso_sequencer_receipts_stored", "legendFormat": "Stored" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "purple", "value": null }] } } }
+    },
+    {
+      "title": "Receipt Generation Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 34 },
+      "targets": [
+        { "expr": "rate(inso_sequencer_receipts_generated_total[5m])", "legendFormat": "Receipts/5m" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "fillOpacity": 15 } } }
+    },
+    {
+      "title": "Receipts vs Transactions",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 34 },
+      "targets": [
+        { "expr": "rate(inso_sequencer_tx_processed_total[5m])", "legendFormat": "Transactions/5m" },
+        { "expr": "rate(inso_sequencer_receipts_generated_total[5m])", "legendFormat": "Receipts/5m" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "fillOpacity": 10 } } }
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["insoblok", "l2", "features", "lanes", "adaptive", "receipts"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "InSoBlok L2 Features",
+  "uid": "insoblok-features",
+  "version": 1
+}

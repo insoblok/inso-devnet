@@ -161,7 +161,7 @@ yellow "▸ Adaptive Block Sizing (Feature #4)"
 result=$(rpc_call "inso_getAdaptiveBlockStats")
 assert_ok "inso_getAdaptiveBlockStats" "$result"
 assert_has_field "inso_getAdaptiveBlockStats" "$result" "currentGasLimit"
-assert_has_field "inso_getAdaptiveBlockStats" "$result" "utilizationEMA"
+assert_has_field "inso_getAdaptiveBlockStats" "$result" "utilization"
 
 echo ""
 

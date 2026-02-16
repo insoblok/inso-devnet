@@ -37,6 +37,10 @@ forge script script/Deploy.s.sol \
   --broadcast \
   --private-key "$PRIVATE_KEY" \
   --skip-simulation \
+  --legacy \
+  --slow \
+  --gas-limit 10000000 \
+  --gas-estimate-multiplier 100 \
   2>&1 | tee /tmp/deploy-output.log
 
 echo ""

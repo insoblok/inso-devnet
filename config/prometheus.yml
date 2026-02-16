@@ -10,5 +10,5 @@ scrape_configs:
 
   - job_name: "validator"
     static_configs:
-      - targets: ["validator:6061"]
+      - targets: ["validator:6061", "validator-2:6061"]
     metrics_path: /metrics

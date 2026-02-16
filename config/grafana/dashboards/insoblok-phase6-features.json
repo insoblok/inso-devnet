@@ -1,0 +1,228 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "── ZK Proof Verification (Feature #5) ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
+      "options": { "content": "ZK-SNARK proof generation and verification status for L2 state transitions", "mode": "markdown" }
+    },
+    {
+      "title": "Blocks Proven",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 2 },
+      "targets": [{ "expr": "inso_validator_blocks_verified_total", "legendFormat": "Proven" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } }
+    },
+    {
+      "title": "Verification Failures",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 2 },
+      "targets": [{ "expr": "inso_validator_verification_failures_total", "legendFormat": "Failures" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "red" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] } } }
+    },
+    {
+      "title": "Verification Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 2 },
+      "targets": [
+        { "expr": "rate(inso_validator_blocks_verified_total[5m])", "legendFormat": "Verified/5m" },
+        { "expr": "rate(inso_validator_verification_failures_total[5m])", "legendFormat": "Failures/5m" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "fillOpacity": 15 } } }
+    },
+    {
+      "title": "── Cross-Chain Attestation (Feature #6) ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 8 },
+      "options": { "content": "Cross-chain bridge attestation counts (L2 → L1 and L1 → L2)", "mode": "markdown" }
+    },
+    {
+      "title": "L2→L1 Attestations",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 10 },
+      "targets": [{ "expr": "inso_crosschain_attestations_total{direction=\"l2_to_l1\"}", "legendFormat": "L2→L1" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "blue" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] } } }
+    },
+    {
+      "title": "L1→L2 Attestations",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 10 },
+      "targets": [{ "expr": "inso_crosschain_attestations_total{direction=\"l1_to_l2\"}", "legendFormat": "L1→L2" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "purple" }, "thresholds": { "steps": [{ "color": "purple", "value": null }] } } }
+    },
+    {
+      "title": "Attestation Throughput",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 10 },
+      "targets": [
+        { "expr": "rate(inso_crosschain_attestations_total[5m])", "legendFormat": "{{direction}}/5m" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "fillOpacity": 20 } } }
+    },
+    {
+      "title": "── Governance (Feature #9) ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 16 },
+      "options": { "content": "On-chain governance proposals, voting, and execution", "mode": "markdown" }
+    },
+    {
+      "title": "Active Proposals",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 18 },
+      "targets": [{ "expr": "inso_governance_active_proposals", "legendFormat": "Active" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "yellow" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }] } } }
+    },
+    {
+      "title": "Total Proposals",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 18 },
+      "targets": [{ "expr": "inso_governance_proposals_total", "legendFormat": "Total" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "cyan" }, "thresholds": { "steps": [{ "color": "cyan", "value": null }] } } }
+    },
+    {
+      "title": "Votes Cast Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 18 },
+      "targets": [
+        { "expr": "rate(inso_governance_votes_cast_total[5m])", "legendFormat": "Votes/5m" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "fillOpacity": 15 } } }
+    },
+    {
+      "title": "── Data Availability (Feature #11) ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 24 },
+      "options": { "content": "Blob storage and availability status for L2 block data", "mode": "markdown" }
+    },
+    {
+      "title": "DA Blobs Published",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 26 },
+      "targets": [{ "expr": "inso_da_blobs_published_total", "legendFormat": "Published" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } }
+    },
+    {
+      "title": "DA Blob Size (bytes)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 26 },
+      "targets": [{ "expr": "inso_da_blob_bytes_total", "legendFormat": "Total Bytes" }],
+      "fieldConfig": { "defaults": { "unit": "bytes", "color": { "mode": "fixed", "fixedColor": "blue" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] } } }
+    },
+    {
+      "title": "DA Throughput",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 26 },
+      "targets": [
+        { "expr": "rate(inso_da_blobs_published_total[5m])", "legendFormat": "Blobs/5m" },
+        { "expr": "rate(inso_da_blob_bytes_total[5m])", "legendFormat": "Bytes/5m" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "fillOpacity": 15 } } }
+    },
+    {
+      "title": "── Restaking (Feature #12) ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 32 },
+      "options": { "content": "Restaking protocol stats — validator restaking positions and rewards", "mode": "markdown" }
+    },
+    {
+      "title": "Total Restaked (INSO)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 34 },
+      "targets": [{ "expr": "inso_restaking_total_restaked_wei / 1e18", "legendFormat": "Restaked INSO" }],
+      "fieldConfig": { "defaults": { "unit": "none", "decimals": 2, "color": { "mode": "fixed", "fixedColor": "orange" }, "thresholds": { "steps": [{ "color": "orange", "value": null }] } } }
+    },
+    {
+      "title": "Active Restakers",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 34 },
+      "targets": [{ "expr": "inso_restaking_active_count", "legendFormat": "Restakers" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "purple" }, "thresholds": { "steps": [{ "color": "purple", "value": null }] } } }
+    },
+    {
+      "title": "Restaking Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 34 },
+      "targets": [
+        { "expr": "inso_restaking_total_restaked_wei / 1e18", "legendFormat": "Total Restaked (INSO)" },
+        { "expr": "inso_restaking_active_count", "legendFormat": "Active Restakers" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "fillOpacity": 15 } } }
+    },
+    {
+      "title": "── AI TasteScore (Feature #8) ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 40 },
+      "options": { "content": "AI-driven TasteScore predictions and transaction ordering fairness", "mode": "markdown" }
+    },
+    {
+      "title": "AI Score Lookups",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 42 },
+      "targets": [{ "expr": "inso_tastescore_lookups_total", "legendFormat": "Lookups" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } }
+    },
+    {
+      "title": "Avg TasteScore",
+      "type": "gauge",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 42 },
+      "targets": [{ "expr": "inso_tastescore_average", "legendFormat": "Average" }],
+      "fieldConfig": { "defaults": { "unit": "none", "min": 0, "max": 1, "decimals": 2, "thresholds": { "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0.3 }, { "color": "green", "value": 0.6 }] } } }
+    },
+    {
+      "title": "TasteScore Distribution Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 42 },
+      "targets": [
+        { "expr": "inso_tastescore_average", "legendFormat": "Avg Score" },
+        { "expr": "rate(inso_tastescore_lookups_total[5m])", "legendFormat": "Lookups/5m" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "fillOpacity": 15 } } }
+    },
+    {
+      "title": "── Ordering Proofs (Feature #7) ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 48 },
+      "options": { "content": "Transaction ordering proof generation and verification for fair sequencing", "mode": "markdown" }
+    },
+    {
+      "title": "Ordering Proofs Generated",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 0, "y": 50 },
+      "targets": [{ "expr": "inso_ordering_proofs_generated_total", "legendFormat": "Proofs" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "cyan" }, "thresholds": { "steps": [{ "color": "cyan", "value": null }] } } }
+    },
+    {
+      "title": "Ordering Proofs Verified",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 8, "y": 50 },
+      "targets": [{ "expr": "inso_ordering_proofs_verified_total", "legendFormat": "Verified" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } }
+    },
+    {
+      "title": "Proof Rate Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 54 },
+      "targets": [
+        { "expr": "rate(inso_ordering_proofs_generated_total[5m])", "legendFormat": "Generated/5m" },
+        { "expr": "rate(inso_ordering_proofs_verified_total[5m])", "legendFormat": "Verified/5m" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "fillOpacity": 15 } } }
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["insoblok", "l2", "phase6", "zk", "crosschain", "governance", "da", "restaking", "ai", "ordering"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "InSoBlok L2 Phase 6+ Features",
+  "uid": "insoblok-phase6-features",
+  "version": 1
+}

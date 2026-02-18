@@ -1,0 +1,247 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "── AI Score Oracle ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
+      "options": { "content": "AI-driven TasteScore computation: feature reporting, weighted scoring, and on-chain score pushes via AIScoreOracle contract", "mode": "markdown" }
+    },
+    {
+      "title": "Total Score Lookups",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 2 },
+      "targets": [{ "expr": "inso_tastescore_lookups_total", "legendFormat": "Lookups" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } }
+    },
+    {
+      "title": "Average TasteScore",
+      "type": "gauge",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 2 },
+      "targets": [{ "expr": "inso_tastescore_average / 10000", "legendFormat": "Avg Score" }],
+      "fieldConfig": { "defaults": { "unit": "none", "min": 0, "max": 1, "decimals": 4, "thresholds": { "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0.3 }, { "color": "green", "value": 0.6 }] } } }
+    },
+    {
+      "title": "Score Lookup Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 2 },
+      "targets": [
+        { "expr": "rate(inso_tastescore_lookups_total[5m])", "legendFormat": "Lookups/s" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "fillOpacity": 15, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Average Score Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 7 },
+      "targets": [
+        { "expr": "inso_tastescore_average / 10000", "legendFormat": "Average" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "none", "min": 0, "max": 1, "decimals": 4, "custom": { "fillOpacity": 20, "lineWidth": 2, "gradientMode": "scheme" } } }
+    },
+
+    {
+      "title": "── MEV-Resistant Ordering Proofs ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 13 },
+      "options": { "content": "Fair transaction ordering via Merkle-proof-based ordering proofs. Transactions are ordered by TasteScore to prevent MEV extraction.", "mode": "markdown" }
+    },
+    {
+      "title": "Proofs Generated",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 15 },
+      "targets": [{ "expr": "inso_ordering_proofs_generated_total", "legendFormat": "Generated" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "cyan" }, "thresholds": { "steps": [{ "color": "cyan", "value": null }] } } }
+    },
+    {
+      "title": "Proofs Verified",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 15 },
+      "targets": [{ "expr": "inso_ordering_proofs_verified_total", "legendFormat": "Verified" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } }
+    },
+    {
+      "title": "Proof Generation & Verification Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 15 },
+      "targets": [
+        { "expr": "rate(inso_ordering_proofs_generated_total[5m])", "legendFormat": "Generated/s" },
+        { "expr": "rate(inso_ordering_proofs_verified_total[5m])", "legendFormat": "Verified/s" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "fillOpacity": 15, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Verification Ratio (%)",
+      "type": "gauge",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 20 },
+      "targets": [{ "expr": "inso_ordering_proofs_verified_total / clamp_min(inso_ordering_proofs_generated_total, 1) * 100", "legendFormat": "Verified %" }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "decimals": 1, "thresholds": { "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 80 }, { "color": "green", "value": 95 }] } } }
+    },
+
+    {
+      "title": "── Sovereign Data Availability ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 25 },
+      "options": { "content": "DA layer blob storage and committee attestation. Blobs store score-computation inputs/outputs for auditability.", "mode": "markdown" }
+    },
+    {
+      "title": "DA Blobs Published",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 27 },
+      "targets": [{ "expr": "inso_da_blobs_published_total", "legendFormat": "Blobs" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "blue" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] } } }
+    },
+    {
+      "title": "DA Blob Size",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 27 },
+      "targets": [{ "expr": "inso_da_blob_bytes_total", "legendFormat": "Total Bytes" }],
+      "fieldConfig": { "defaults": { "unit": "bytes", "color": { "mode": "fixed", "fixedColor": "purple" }, "thresholds": { "steps": [{ "color": "purple", "value": null }] } } }
+    },
+    {
+      "title": "DA Throughput",
+      "type": "timeseries",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 27 },
+      "targets": [
+        { "expr": "rate(inso_da_blobs_published_total[5m])", "legendFormat": "Blobs/s" },
+        { "expr": "rate(inso_da_blob_bytes_total[5m])", "legendFormat": "Bytes/s" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "fillOpacity": 15, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Avg Blob Size",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 32 },
+      "targets": [{ "expr": "inso_da_blob_bytes_total / clamp_min(inso_da_blobs_published_total, 1)", "legendFormat": "Avg Bytes/Blob" }],
+      "fieldConfig": { "defaults": { "unit": "bytes", "decimals": 0, "color": { "mode": "fixed", "fixedColor": "orange" }, "thresholds": { "steps": [{ "color": "orange", "value": null }] } } }
+    },
+
+    {
+      "title": "── Compliance Screening ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 37 },
+      "options": { "content": "OFAC/sanctions compliance screening on sequencer-level transaction ordering. Flagged addresses are tagged in ordering proofs.", "mode": "markdown" }
+    },
+    {
+      "title": "Compliance Screens",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 39 },
+      "targets": [{ "expr": "inso_compliance_screens_total", "legendFormat": "Screens" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } }
+    },
+    {
+      "title": "Addresses Flagged",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 39 },
+      "targets": [{ "expr": "inso_compliance_flagged_total", "legendFormat": "Flagged" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "red" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 10 }] } } }
+    },
+    {
+      "title": "Compliance Screening Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 39 },
+      "targets": [
+        { "expr": "rate(inso_compliance_screens_total[5m])", "legendFormat": "Screens/s" },
+        { "expr": "rate(inso_compliance_flagged_total[5m])", "legendFormat": "Flagged/s" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "fillOpacity": 15, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Flag Rate (%)",
+      "type": "gauge",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 44 },
+      "targets": [{ "expr": "inso_compliance_flagged_total / clamp_min(inso_compliance_screens_total, 1) * 100", "legendFormat": "Flag %" }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "decimals": 2, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 5 }] } } }
+    },
+
+    {
+      "title": "── Block Verification (Validator) ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 49 },
+      "options": { "content": "ZK-proof block verification and cross-chain attestation stats from validators", "mode": "markdown" }
+    },
+    {
+      "title": "Blocks Verified",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 4, "x": 0, "y": 51 },
+      "targets": [{ "expr": "sum(inso_validator_blocks_verified_total)", "legendFormat": "Verified" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } }
+    },
+    {
+      "title": "Verification Failures",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 4, "x": 4, "y": 51 },
+      "targets": [{ "expr": "sum(inso_validator_verification_failures_total)", "legendFormat": "Failures" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "red" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] } } }
+    },
+    {
+      "title": "L2→L1 Attestations",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 4, "x": 8, "y": 51 },
+      "targets": [{ "expr": "sum(inso_crosschain_attestations_total{direction=\"l2_to_l1\"})", "legendFormat": "L2→L1" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "blue" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] } } }
+    },
+    {
+      "title": "L1→L2 Attestations",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 4, "x": 12, "y": 51 },
+      "targets": [{ "expr": "sum(inso_crosschain_attestations_total{direction=\"l1_to_l2\"})", "legendFormat": "L1→L2" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "purple" }, "thresholds": { "steps": [{ "color": "purple", "value": null }] } } }
+    },
+    {
+      "title": "Verification & Attestation Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 7, "w": 8, "x": 16, "y": 51 },
+      "targets": [
+        { "expr": "rate(sum(inso_validator_blocks_verified_total)[5m:])", "legendFormat": "Verified/s" },
+        { "expr": "rate(sum(inso_crosschain_attestations_total)[5m:])", "legendFormat": "Attestations/s" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "fillOpacity": 15, "lineWidth": 2 } } }
+    },
+
+    {
+      "title": "── Governance ──",
+      "type": "text",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 58 },
+      "options": { "content": "QuadraticGovernance on-chain proposals and voting activity", "mode": "markdown" }
+    },
+    {
+      "title": "Active Proposals",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 60 },
+      "targets": [{ "expr": "sum(inso_governance_active_proposals)", "legendFormat": "Active" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "yellow" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }] } } }
+    },
+    {
+      "title": "Total Proposals",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 60 },
+      "targets": [{ "expr": "sum(inso_governance_proposals_total)", "legendFormat": "Total" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "cyan" }, "thresholds": { "steps": [{ "color": "cyan", "value": null }] } } }
+    },
+    {
+      "title": "Votes Cast Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 60 },
+      "targets": [
+        { "expr": "rate(sum(inso_governance_votes_cast_total)[5m:])", "legendFormat": "Votes/s" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "fillOpacity": 15, "lineWidth": 2 } } }
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["insoblok", "l2", "phase5", "ai-oracle", "ordering", "da", "compliance", "governance"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "InSoBlok L2 Phase 5 — AI, Ordering, DA & Compliance",
+  "uid": "insoblok-phase5",
+  "version": 1
+}

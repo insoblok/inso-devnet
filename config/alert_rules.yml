@@ -1,0 +1,211 @@
+groups:
+  # ── Sequencer Health ──────────────────────────────────────
+  - name: sequencer_health
+    rules:
+      - alert: SequencerBlockStall
+        expr: increase(inso_sequencer_block_height[5m]) == 0
+        for: 3m
+        labels:
+          severity: critical
+          component: sequencer
+        annotations:
+          summary: "Sequencer block production stalled"
+          description: "No new blocks produced in the last 5 minutes."
+
+      - alert: SequencerHighRPCErrorRate
+        expr: rate(inso_sequencer_rpc_errors_total[5m]) / clamp_min(rate(inso_sequencer_rpc_requests_total[5m]), 0.001) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          component: sequencer
+        annotations:
+          summary: "RPC error rate > 5%"
+          description: "Sequencer RPC error rate is {{ $value | humanizePercentage }}."
+
+      - alert: SequencerMempoolBacklog
+        expr: inso_sequencer_mempool_size > 5000
+        for: 5m
+        labels:
+          severity: warning
+          component: sequencer
+        annotations:
+          summary: "Mempool depth exceeding 5000 transactions"
+          description: "Current mempool size: {{ $value }}."
+
+      - alert: SequencerHighBlockTime
+        expr: inso_sequencer_block_time_avg_ms > 2000
+        for: 3m
+        labels:
+          severity: warning
+          component: sequencer
+        annotations:
+          summary: "Average block time exceeds 2s"
+          description: "Block time average: {{ $value }}ms."
+
+      - alert: SequencerGasUtilizationHigh
+        expr: inso_sequencer_adaptive_utilization_bps > 9000
+        for: 5m
+        labels:
+          severity: warning
+          component: sequencer
+        annotations:
+          summary: "Gas utilization above 90%"
+          description: "Sustained gas utilization at {{ $value }} bps."
+
+  # ── Validator Health ──────────────────────────────────────
+  - name: validator_health
+    rules:
+      - alert: ValidatorDesync
+        expr: inso_validator_is_synced == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: validator
+        annotations:
+          summary: "Validator out of sync"
+          description: "Validator has been unsynced for over 2 minutes."
+
+      - alert: ValidatorBlockLag
+        expr: inso_sequencer_block_height - inso_validator_synced_block > 10
+        for: 3m
+        labels:
+          severity: warning
+          component: validator
+        annotations:
+          summary: "Validator lagging behind sequencer by >10 blocks"
+          description: "Sequencer height: {{ with query \"inso_sequencer_block_height\" }}{{ . | first | value }}{{ end }}, Validator synced: {{ $value }}."
+
+      - alert: ValidatorAttestationFailureSpike
+        expr: rate(inso_validator_attestations_failed_total[5m]) > 0.5
+        for: 2m
+        labels:
+          severity: warning
+          component: validator
+        annotations:
+          summary: "High attestation failure rate"
+          description: "Attestation failures: {{ $value | humanize }}/s."
+
+      - alert: ValidatorNoPeers
+        expr: inso_validator_peer_count == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: validator
+        annotations:
+          summary: "Validator has zero P2P peers"
+          description: "Validator is isolated — no connected peers."
+
+      - alert: ValidatorSlashed
+        expr: increase(inso_validator_slashes_received_total[10m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          component: validator
+        annotations:
+          summary: "Validator received a slash"
+          description: "Slashes received increased by {{ $value }} in the last 10 minutes."
+
+  # ── Phase 5: AI Score Oracle ──────────────────────────────
+  - name: phase5_ai_oracle
+    rules:
+      - alert: TasteScoreLookupDrop
+        expr: rate(inso_tastescore_lookups_total[10m]) == 0 and inso_tastescore_lookups_total > 0
+        for: 10m
+        labels:
+          severity: warning
+          component: ai_oracle
+        annotations:
+          summary: "No TasteScore lookups in 10 minutes"
+          description: "TasteScore lookup activity has stopped."
+
+      - alert: TasteScoreAnomalousAverage
+        expr: inso_tastescore_average / 10000 > 0.95 or inso_tastescore_average / 10000 < 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: ai_oracle
+        annotations:
+          summary: "TasteScore average is anomalous"
+          description: "Average score of {{ $value }} is outside expected 0.05–0.95 range."
+
+  # ── Phase 5: Ordering Proofs ──────────────────────────────
+  - name: phase5_ordering
+    rules:
+      - alert: OrderingProofVerificationLag
+        expr: inso_ordering_proofs_generated_total - inso_ordering_proofs_verified_total > 50
+        for: 5m
+        labels:
+          severity: warning
+          component: ordering
+        annotations:
+          summary: "Ordering proof verification lagging"
+          description: "{{ $value }} unverified ordering proofs."
+
+      - alert: OrderingProofGenerationStall
+        expr: rate(inso_ordering_proofs_generated_total[10m]) == 0 and inso_ordering_proofs_generated_total > 0
+        for: 10m
+        labels:
+          severity: warning
+          component: ordering
+        annotations:
+          summary: "Ordering proof generation stalled"
+          description: "No new ordering proofs generated in 10 minutes."
+
+  # ── Phase 5: Data Availability ────────────────────────────
+  - name: phase5_da
+    rules:
+      - alert: DABlobPublishStall
+        expr: rate(inso_da_blobs_published_total[10m]) == 0 and inso_da_blobs_published_total > 0
+        for: 15m
+        labels:
+          severity: warning
+          component: da
+        annotations:
+          summary: "DA blob publishing stalled"
+          description: "No new DA blobs published in 15 minutes."
+
+      - alert: DABlobSizeAnomaly
+        expr: inso_da_blob_bytes_total / clamp_min(inso_da_blobs_published_total, 1) > 1048576
+        for: 5m
+        labels:
+          severity: warning
+          component: da
+        annotations:
+          summary: "Average DA blob size exceeds 1MB"
+          description: "Average blob size: {{ $value }} bytes."
+
+  # ── Phase 5: Compliance ───────────────────────────────────
+  - name: phase5_compliance
+    rules:
+      - alert: ComplianceFlagRateHigh
+        expr: inso_compliance_flagged_total / clamp_min(inso_compliance_screens_total, 1) > 0.10
+        for: 5m
+        labels:
+          severity: warning
+          component: compliance
+        annotations:
+          summary: "Compliance flag rate exceeds 10%"
+          description: "Flag rate: {{ $value | humanizePercentage }}. Possible attack or misconfiguration."
+
+      - alert: ComplianceScreeningDown
+        expr: rate(inso_compliance_screens_total[10m]) == 0 and inso_compliance_screens_total > 0
+        for: 10m
+        labels:
+          severity: critical
+          component: compliance
+        annotations:
+          summary: "Compliance screening stopped"
+          description: "No compliance screens in 10 minutes — transactions may be unscreened."
+
+  # ── Phase 5: Governance ───────────────────────────────────
+  - name: phase5_governance
+    rules:
+      - alert: GovernanceProposalOverload
+        expr: sum(inso_governance_active_proposals) > 20
+        for: 5m
+        labels:
+          severity: warning
+          component: governance
+        annotations:
+          summary: "More than 20 active governance proposals"
+          description: "{{ $value }} active proposals — possible spam."

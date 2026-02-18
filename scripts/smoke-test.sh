@@ -194,6 +194,40 @@ fi
 
 echo ""
 
+# ── 5b. Compliance & Ordering (Phase 5) ─────────────────────────────────────
+
+yellow "▸ Compliance & Ordering (Phase 5 Integration)"
+
+result=$(rpc_call "inso_getComplianceStatus" '["0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"]')
+assert_ok "inso_getComplianceStatus" "$result"
+assert_has_field "inso_getComplianceStatus" "$result" "fatf_tier"
+assert_has_field "inso_getComplianceStatus" "$result" "ordering_priority"
+
+result=$(rpc_call "inso_getOrderingProof" '[0]')
+TOTAL=$((TOTAL + 1))
+if [ -n "$result" ]; then
+  PASS=$((PASS + 1))
+  green "  ✓ inso_getOrderingProof (endpoint reachable)"
+else
+  FAIL=$((FAIL + 1))
+  red "  ✗ inso_getOrderingProof (no response)"
+fi
+
+result=$(rpc_call "inso_getDABlobStatus" '["0x0000000000000000000000000000000000000000000000000000000000000000"]')
+TOTAL=$((TOTAL + 1))
+if [ -n "$result" ]; then
+  PASS=$((PASS + 1))
+  green "  ✓ inso_getDABlobStatus (endpoint reachable)"
+else
+  FAIL=$((FAIL + 1))
+  red "  ✗ inso_getDABlobStatus (no response)"
+fi
+
+result=$(rpc_call "inso_getSequencerStatus")
+assert_has_field "inso_getSequencerStatus (compliance)" "$result" "compliance_enabled"
+
+echo ""
+
 # ── 6. Validator RPC ─────────────────────────────────────────────────────────
 
 yellow "▸ Validator RPC"
